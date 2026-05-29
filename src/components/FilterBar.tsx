@@ -2,7 +2,7 @@ import { useRef, useEffect, useState } from 'react'
 import { Field } from '@base-ui/react/field'
 import { Popover } from '@base-ui/react/popover'
 import type { VisibilityState } from '@tanstack/react-table'
-import { Search, ChevronDown, Check } from 'lucide-react'
+import { Search, ChevronDown, Check, X, FilterX } from 'lucide-react'
 import { ColumnToggle } from '@/components/ColumnToggle'
 
 // ----------------------------------------------------------------
@@ -38,7 +38,7 @@ type Props = {
 }
 
 // ----------------------------------------------------------------
-// MultiSelect — 通用多选下拉组件
+// MultiSelect — 通用多选下拉
 // ----------------------------------------------------------------
 function MultiSelect<T extends string | number>({
   label,
@@ -64,21 +64,21 @@ function MultiSelect<T extends string | number>({
 
   return (
     <Popover.Root>
-      <Popover.Trigger className="flex items-center gap-1.5 px-3 py-1.5 text-sm border border-gray-300 rounded-md hover:bg-gray-50 transition-colors text-gray-700 min-w-max">
+      <Popover.Trigger className="flex items-center gap-1.5 px-3 py-2 md:py-1.5 text-sm border border-gray-300 rounded-md hover:bg-gray-50 active:bg-gray-100 transition-colors text-gray-700 min-w-max touch-manipulation">
         <span>{displayLabel}</span>
-        <ChevronDown size={13} className="text-gray-400" />
+        <ChevronDown size={13} className="text-gray-400 shrink-0" />
       </Popover.Trigger>
       <Popover.Portal>
         <Popover.Positioner side="bottom" align="start" sideOffset={4} className="z-100">
-          <Popover.Popup className="bg-white border border-gray-200 rounded-lg shadow-lg py-1 min-w-36 z-50">
+          <Popover.Popup className="bg-white border border-gray-200 rounded-lg shadow-lg py-1 min-w-36">
             {options.map((opt) => (
               <div
                 key={String(opt.value)}
                 onClick={() => toggle(opt.value)}
-                className="flex items-center gap-2 px-3 py-1.5 text-sm cursor-pointer hover:bg-gray-50 select-none"
+                className="flex items-center gap-2 px-3 py-2.5 md:py-1.5 text-sm cursor-pointer hover:bg-gray-50 active:bg-gray-100 select-none touch-manipulation"
               >
                 <span
-                  className={`w-4 h-4 border rounded flex items-center justify-center text-xs ${
+                  className={`w-4 h-4 shrink-0 border rounded flex items-center justify-center ${
                     selected.includes(opt.value)
                       ? 'bg-blue-600 border-blue-600 text-white'
                       : 'border-gray-300'
@@ -116,7 +116,6 @@ export function FilterBar({
   const [localSearch, setLocalSearch] = useState(search)
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  // 300ms 防抖上报搜索词
   useEffect(() => {
     if (timerRef.current) clearTimeout(timerRef.current)
     timerRef.current = setTimeout(() => onSearchChange(localSearch), 300)
@@ -136,61 +135,75 @@ export function FilterBar({
   }
 
   return (
-    <div className="flex items-center gap-2 flex-wrap">
-      {/* 搜索框 */}
-      <Field.Root className="flex items-center border border-gray-300 rounded-md overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 transition-all">
-        <span className="pl-3">
+    <div className="flex flex-col gap-2 w-full md:flex-row md:flex-wrap md:items-center">
+      {/* 搜索框 — 移动端占满宽度 */}
+      <Field.Root className="flex items-center border border-gray-300 rounded-md overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 transition-all flex-1 md:flex-none">
+        <span className="pl-3 shrink-0">
           <Search size={15} className="text-gray-400" />
         </span>
         <Field.Control
           value={localSearch}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => setLocalSearch(e.target.value)}
           placeholder="搜索基金代码或名称…"
-          className="px-2 py-1.5 text-sm outline-none bg-transparent w-52"
+          className="px-2 py-2 md:py-1.5 text-sm outline-none bg-transparent w-full md:w-48"
         />
+        {localSearch && (
+          <button
+            onClick={() => setLocalSearch('')}
+            className="pr-2.5 text-gray-400 hover:text-gray-600 touch-manipulation"
+            aria-label="清除搜索"
+          >
+            <X size={14} />
+          </button>
+        )}
       </Field.Root>
 
-      {/* 风险等级多选 */}
-      <MultiSelect
-        label="风险等级"
-        options={RISK_OPTIONS.map((r) => ({ value: r, label: `R${r}` }))}
-        selected={riskLevels}
-        onChange={onRiskLevelsChange}
-      />
-
-      {/* 状态多选 */}
-      <MultiSelect
-        label="状态"
-        options={STATUS_OPTIONS}
-        selected={statuses}
-        onChange={onStatusesChange}
-      />
-
-      {/* 归属地多选 */}
-      <MultiSelect
-        label="类别"
-        options={DOMICILE_OPTIONS}
-        selected={domiciles}
-        onChange={onDomicilesChange}
-      />
-
-      {/* 列配置 */}
-      <ColumnToggle
-        columnVisibility={columnVisibility}
-        onColumnVisibilityChange={onColumnVisibilityChange}
-        columnOrder={columnOrder}
-        onColumnOrderChange={onColumnOrderChange}
-      />
-
-      {/* 清除筛选 — 有任意筛选条件时显示 */}
-      {hasFilter && (
-        <button
-          onClick={clearAll}
-          className="px-3 py-1.5 text-sm text-red-500 border border-red-200 rounded-md hover:bg-red-50 transition-colors"
-        >
-          清除筛选
-        </button>
-      )}
+      {/* 筛选按钮组 — 横向滚动 */}
+      <div className="flex items-center gap-2 overflow-x-auto pb-0.5 md:pb-0 scrollbar-none">
+        <MultiSelect
+          label="风险等级"
+          options={RISK_OPTIONS.map((r) => ({ value: r, label: `R${r}` }))}
+          selected={riskLevels}
+          onChange={onRiskLevelsChange}
+        />
+        <MultiSelect
+          label="状态"
+          options={STATUS_OPTIONS}
+          selected={statuses}
+          onChange={onStatusesChange}
+        />
+        <MultiSelect
+          label="类别"
+          options={DOMICILE_OPTIONS}
+          selected={domiciles}
+          onChange={onDomicilesChange}
+        />
+        <ColumnToggle
+          columnVisibility={columnVisibility}
+          onColumnVisibilityChange={onColumnVisibilityChange}
+          columnOrder={columnOrder}
+          onColumnOrderChange={onColumnOrderChange}
+        />
+        {hasFilter && (
+          <button
+            onClick={clearAll}
+            className="flex items-center gap-1 px-3 py-2 md:py-1.5 text-sm text-red-500 border border-red-200 rounded-md hover:bg-red-50 active:bg-red-100 transition-colors shrink-0 touch-manipulation"
+          >
+            <FilterX size={14} />
+            <span className="hidden sm:inline">清除筛选</span>
+          </button>
+        )}
+      </div>
     </div>
   )
+}
+
+// 导出活跃筛选数量，供父组件显示徽标
+export function countActiveFilters(
+  search: string,
+  riskLevels: number[],
+  statuses: string[],
+  domiciles: string[],
+) {
+  return (search ? 1 : 0) + riskLevels.length + statuses.length + domiciles.length
 }

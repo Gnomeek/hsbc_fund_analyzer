@@ -1,9 +1,10 @@
 import { useState, useMemo } from 'react'
+import { SlidersHorizontal } from 'lucide-react'
 
 import { useFundData } from '@/hooks/useFundData'
 import { LoadingPage } from '@/components/LoadingPage'
 import { FundTable } from '@/components/FundTable'
-import { FilterBar } from '@/components/FilterBar'
+import { FilterBar, countActiveFilters } from '@/components/FilterBar'
 import { DEFAULT_VISIBLE_COLUMNS, ALL_COLUMNS, TOGGLEABLE_COLUMN_IDS } from '@/lib/columns'
 import type { SortingState, ColumnFiltersState, VisibilityState } from '@tanstack/react-table'
 
@@ -34,7 +35,6 @@ function savePrefs(visibility: VisibilityState, order: string[]) {
   }
 }
 
-// 将已保存的顺序与当前列定义合并：删除已不存在的列，追加新增列到末尾
 function mergeOrder(saved: string[], current: string[]): string[] {
   const currentSet = new Set(current)
   const result = saved.filter((id) => currentSet.has(id))
@@ -53,6 +53,7 @@ export default function App() {
   const [statuses, setStatuses] = useState<string[]>([])
   const [domiciles, setDomiciles] = useState<string[]>([])
   const [sorting, setSorting] = useState<SortingState>([])
+  const [mobileFilterOpen, setMobileFilterOpen] = useState(false)
 
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(() => {
     const prefs = loadPrefs()
@@ -80,9 +81,10 @@ export default function App() {
   const streamLoaded = isStreaming ? state.loaded : null
   const streamTotal = isStreaming ? state.total : null
 
+  const activeFilterCount = countActiveFilters(search, riskLevels, statuses, domiciles)
+
   const filteredData = useMemo(() => {
     if (state.status !== 'ok' && state.status !== 'streaming') return []
-    // streaming 时也渲染已加载的行
     return state.data.filter((row) => {
       if (riskLevels.length && !riskLevels.includes(row.risk_level)) return false
       if (statuses.length && !statuses.some((s) => row.fund_status.includes(s))) return false
@@ -98,34 +100,56 @@ export default function App() {
     return <div className="p-4 text-red-500">数据加载失败：{state.message}</div>
   }
 
+  const filterBarProps = {
+    search,
+    onSearchChange: setSearch,
+    riskLevels,
+    onRiskLevelsChange: setRiskLevels,
+    statuses,
+    onStatusesChange: setStatuses,
+    domiciles,
+    onDomicilesChange: setDomiciles,
+    columnVisibility,
+    onColumnVisibilityChange: handleVisibilityChange,
+    columnOrder: toggleableColOrder,
+    onColumnOrderChange: handleOrderChange,
+  }
+
   return (
     <div className="flex flex-col h-screen bg-gray-50">
-      <header className="bg-white border-b border-gray-200 px-6 py-3 flex items-center gap-4">
+      {/* ── Header ── */}
+      <header className="bg-white border-b border-gray-200 px-4 md:px-6 py-3 flex items-center gap-3 shrink-0">
+        {/* Logo */}
         <div className="flex items-center gap-2 shrink-0">
           <span className="bg-red-600 text-white text-xs font-bold px-2 py-0.5 rounded">HSBC</span>
-          <h1 className="text-base font-semibold text-gray-800">代销基金</h1>
+          <h1 className="text-base font-semibold text-gray-800">基金快车</h1>
         </div>
 
-        <FilterBar
-          search={search}
-          onSearchChange={setSearch}
-          riskLevels={riskLevels}
-          onRiskLevelsChange={setRiskLevels}
-          statuses={statuses}
-          onStatusesChange={setStatuses}
-          domiciles={domiciles}
-          onDomicilesChange={setDomiciles}
-          columnVisibility={columnVisibility}
-          onColumnVisibilityChange={handleVisibilityChange}
-          columnOrder={toggleableColOrder}
-          onColumnOrderChange={handleOrderChange}
-        />
+        {/* Desktop: inline FilterBar */}
+        <div className="hidden md:flex flex-1 min-w-0">
+          <FilterBar {...filterBarProps} />
+        </div>
 
+        {/* Mobile: 筛选切换按钮 */}
+        <button
+          onClick={() => setMobileFilterOpen((v) => !v)}
+          className="md:hidden ml-auto relative p-2 rounded-md text-gray-500 hover:bg-gray-100 active:bg-gray-200 transition-colors touch-manipulation"
+          aria-label="筛选"
+        >
+          <SlidersHorizontal size={18} />
+          {activeFilterCount > 0 && (
+            <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-red-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center leading-none">
+              {activeFilterCount}
+            </span>
+          )}
+        </button>
+
+        {/* GitHub */}
         <a
           href="https://github.com/Gnomeek/hsbc_fund_analyzer"
           target="_blank"
           rel="noopener noreferrer"
-          className="ml-auto shrink-0 text-gray-400 hover:text-gray-700 transition-colors"
+          className="shrink-0 text-gray-400 hover:text-gray-700 transition-colors md:ml-auto"
           aria-label="GitHub 仓库"
         >
           <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true">
@@ -134,7 +158,18 @@ export default function App() {
         </a>
       </header>
 
-      {/* streaming 进度条 */}
+      {/* Mobile: 可折叠筛选面板 */}
+      <div
+        className={`md:hidden bg-white border-b border-gray-200 overflow-hidden transition-all duration-300 ease-in-out shrink-0 ${
+          mobileFilterOpen ? 'max-h-64 opacity-100' : 'max-h-0 opacity-0'
+        }`}
+      >
+        <div className="px-4 py-3">
+          <FilterBar {...filterBarProps} />
+        </div>
+      </div>
+
+      {/* Streaming 进度条 */}
       {isStreaming && (
         <div className="h-0.5 bg-gray-100 overflow-hidden shrink-0">
           {streamLoaded != null && streamTotal ? (
@@ -150,7 +185,7 @@ export default function App() {
         </div>
       )}
 
-      <main className="flex-1 overflow-hidden px-4 py-3">
+      <main className="flex-1 overflow-hidden px-2 py-2 md:px-4 md:py-3">
         <FundTable
           data={filteredData}
           globalFilter={search}
