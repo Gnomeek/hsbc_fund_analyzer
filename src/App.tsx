@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react'
 
 import { useFundData } from '@/hooks/useFundData'
+import { LoadingPage } from '@/components/LoadingPage'
 import { FundTable } from '@/components/FundTable'
 import { FilterBar } from '@/components/FilterBar'
 import { DEFAULT_VISIBLE_COLUMNS, ALL_COLUMNS, TOGGLEABLE_COLUMN_IDS } from '@/lib/columns'
@@ -75,8 +76,13 @@ export default function App() {
     savePrefs(columnVisibility, ids)
   }
 
+  const isStreaming = state.status === 'streaming'
+  const streamLoaded = isStreaming ? state.loaded : null
+  const streamTotal = isStreaming ? state.total : null
+
   const filteredData = useMemo(() => {
-    if (state.status !== 'ok') return []
+    if (state.status !== 'ok' && state.status !== 'streaming') return []
+    // streaming 时也渲染已加载的行
     return state.data.filter((row) => {
       if (riskLevels.length && !riskLevels.includes(row.risk_level)) return false
       if (statuses.length && !statuses.some((s) => row.fund_status.includes(s))) return false
@@ -85,9 +91,9 @@ export default function App() {
     })
   }, [state, riskLevels, statuses, domiciles])
 
-  if (state.status === 'loading') {
-    return <div className="flex items-center justify-center h-screen text-gray-500">加载中…</div>
-  }
+  if (state.status === 'loading') return <LoadingPage />
+  if (state.status === 'streaming' && state.data.length === 0)
+    return <LoadingPage loaded={0} total={state.total} />
   if (state.status === 'error') {
     return <div className="p-4 text-red-500">数据加载失败：{state.message}</div>
   }
@@ -127,6 +133,22 @@ export default function App() {
           </svg>
         </a>
       </header>
+
+      {/* streaming 进度条 */}
+      {isStreaming && (
+        <div className="h-0.5 bg-gray-100 overflow-hidden shrink-0">
+          {streamLoaded != null && streamTotal ? (
+            <div
+              className="h-full bg-red-500 transition-all duration-300 ease-out"
+              style={{ width: `${Math.min((streamLoaded / streamTotal) * 100, 99)}%` }}
+            />
+          ) : (
+            <div className="h-full w-full relative">
+              <div className="absolute inset-y-0 w-1/3 bg-gradient-to-r from-transparent via-red-400 to-transparent animate-[shimmer_1.4s_ease-in-out_infinite]" />
+            </div>
+          )}
+        </div>
+      )}
 
       <main className="flex-1 overflow-hidden px-4 py-3">
         <FundTable
