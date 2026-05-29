@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://hsbc-fund-analyzer.vercel.app/sitemap.xml
