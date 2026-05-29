@@ -134,7 +134,7 @@ export function FundTable({
       <div
         ref={tableContainerRef}
         className="overflow-auto flex-1 border border-gray-200 rounded-lg"
-        style={{ touchAction: 'pan-x pan-y', overscrollBehavior: 'contain' }}
+        style={{ touchAction: 'pan-x pan-y', overscrollBehavior: 'contain', userSelect: 'none' }}
       >
         <table
           className="text-sm border-collapse"

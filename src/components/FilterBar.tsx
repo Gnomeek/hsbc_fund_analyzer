@@ -70,7 +70,7 @@ function MultiSelect<T extends string | number>({
       </Popover.Trigger>
       <Popover.Portal>
         <Popover.Positioner side="bottom" align="start" sideOffset={4} className="z-100">
-          <Popover.Popup className="bg-white border border-gray-200 rounded-lg shadow-lg py-1 min-w-36">
+          <Popover.Popup className="bg-white border border-gray-200 rounded-lg shadow-lg py-1 min-w-36 max-h-72 overflow-y-auto">
             {options.map((opt) => (
               <div
                 key={String(opt.value)}

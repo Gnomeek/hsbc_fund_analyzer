@@ -1,5 +1,17 @@
 @import 'tailwindcss';
 
+/* 禁止页面级别 overscroll（iOS Safari rubber-band / 乱拽） */
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+#root {
+  height: 100%;
+  overflow: hidden;
+}
+
 .scrollbar-none {
   scrollbar-width: none;
   -ms-overflow-style: none;

@@ -166,31 +166,33 @@ export function ColumnToggle({
 
       <Popover.Portal>
         <Popover.Positioner side="bottom" align="end" sideOffset={6} className="z-100">
-          <Popover.Popup className="bg-white border border-gray-200 rounded-lg shadow-lg p-2 w-52">
-            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide px-2 pt-1 pb-2">
+          <Popover.Popup className="bg-white border border-gray-200 rounded-lg shadow-lg p-2 w-52 flex flex-col max-h-[70vh]">
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide px-2 pt-1 pb-2 shrink-0">
               列顺序 / 显示
             </p>
 
-            <DndContext
-              sensors={sensors}
-              collisionDetection={closestCenter}
-              onDragEnd={handleDragEnd}
-            >
-              <SortableContext items={columnOrder} strategy={verticalListSortingStrategy}>
-                {columnOrder.map((id, idx) => (
-                  <SortableRow
-                    key={id}
-                    id={id}
-                    visible={columnVisibility[id] ?? false}
-                    onToggle={() => toggle(id)}
-                    onMoveUp={() => move(id, -1)}
-                    onMoveDown={() => move(id, 1)}
-                    isFirst={idx === 0}
-                    isLast={idx === columnOrder.length - 1}
-                  />
-                ))}
-              </SortableContext>
-            </DndContext>
+            <div className="overflow-y-auto flex-1">
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}
+              >
+                <SortableContext items={columnOrder} strategy={verticalListSortingStrategy}>
+                  {columnOrder.map((id, idx) => (
+                    <SortableRow
+                      key={id}
+                      id={id}
+                      visible={columnVisibility[id] ?? false}
+                      onToggle={() => toggle(id)}
+                      onMoveUp={() => move(id, -1)}
+                      onMoveDown={() => move(id, 1)}
+                      isFirst={idx === 0}
+                      isLast={idx === columnOrder.length - 1}
+                    />
+                  ))}
+                </SortableContext>
+              </DndContext>
+            </div>
           </Popover.Popup>
         </Popover.Positioner>
       </Popover.Portal>
