@@ -1,0 +1,123 @@
+<h2>整体布局风格选哪种？</h2>
+<p class="subtitle">598只基金数据，支持过滤/排序/筛选。先定好骨架再选组件。</p>
+
+<div class="cards">
+
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background:#0f172a;padding:12px;border-radius:6px;font-size:11px;color:#94a3b8;font-family:monospace;">
+        <div style="background:#1e293b;padding:6px 10px;border-radius:4px;margin-bottom:8px;color:#e2e8f0;display:flex;gap:8px;align-items:center;">
+          <span style="color:#60a5fa;">HSBC</span>
+          <span style="color:#64748b;margin-left:auto;">基金筛选</span>
+        </div>
+        <div style="display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap;">
+          <span style="background:#1e40af;color:#bfdbfe;padding:2px 8px;border-radius:20px;font-size:10px;">风险等级 ▾</span>
+          <span style="background:#1e3a5f;color:#7dd3fc;padding:2px 8px;border-radius:20px;font-size:10px;">状态 ▾</span>
+          <span style="background:#1e3a5f;color:#7dd3fc;padding:2px 8px;border-radius:20px;font-size:10px;">类型 ▾</span>
+          <span style="background:#1e3a5f;color:#7dd3fc;padding:2px 8px;border-radius:20px;font-size:10px;">搜索 🔍</span>
+        </div>
+        <div style="background:#1e293b;border-radius:4px;overflow:hidden;">
+          <div style="display:grid;grid-template-columns:60px 1fr 50px 60px 60px 60px;gap:4px;padding:5px 8px;border-bottom:1px solid #334155;color:#64748b;font-size:9px;">
+            <span>代码</span><span>基金名称</span><span>风险</span><span>净值</span><span>1年</span><span>YTD</span>
+          </div>
+          <div style="display:grid;grid-template-columns:60px 1fr 50px 60px 60px 60px;gap:4px;padding:4px 8px;border-bottom:1px solid #1e293b;color:#e2e8f0;font-size:9px;">
+            <span style="color:#60a5fa;">000011</span><span style="color:#cbd5e1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">华夏大盘精选</span><span style="text-align:center;">★★★</span><span>24.97</span><span style="color:#34d399;">+72%</span><span style="color:#34d399;">+27%</span>
+          </div>
+          <div style="display:grid;grid-template-columns:60px 1fr 50px 60px 60px 60px;gap:4px;padding:4px 8px;border-bottom:1px solid #1e293b;color:#e2e8f0;font-size:9px;background:#172032;">
+            <span style="color:#60a5fa;">000043</span><span style="color:#cbd5e1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">嘉实美国成长</span><span style="text-align:center;">★★★★</span><span>6.44</span><span style="color:#34d399;">+33%</span><span style="color:#34d399;">+13%</span>
+          </div>
+          <div style="display:grid;grid-template-columns:60px 1fr 50px 60px 60px 60px;gap:4px;padding:4px 8px;color:#e2e8f0;font-size:9px;">
+            <span style="color:#60a5fa;">000051</span><span style="color:#cbd5e1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">华夏沪深300联接</span><span style="text-align:center;">★★★★</span><span>1.85</span><span style="color:#34d399;">+30%</span><span style="color:#34d399;">+6%</span>
+          </div>
+        </div>
+        <div style="text-align:center;color:#475569;font-size:9px;margin-top:6px;">598 条 · 第 1/60 页</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — 深色专业风</h3>
+      <p>深色背景，数据密集表格，适合金融分析师风格。紧凑、信息量大、专业感强。</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background:#f8fafc;padding:12px;border-radius:6px;font-size:11px;color:#475569;font-family:system-ui;">
+        <div style="background:white;padding:6px 10px;border-radius:4px;margin-bottom:8px;box-shadow:0 1px 3px rgba(0,0,0,0.1);display:flex;gap:8px;align-items:center;">
+          <span style="color:#ef4444;font-weight:600;">HSBC</span>
+          <span style="color:#64748b;font-size:10px;">基金数据浏览器</span>
+          <input style="margin-left:auto;border:1px solid #e2e8f0;border-radius:20px;padding:2px 10px;font-size:10px;color:#64748b;outline:none;" placeholder="🔍 搜索基金..." readonly>
+        </div>
+        <div style="display:flex;gap:6px;margin-bottom:8px;">
+          <div style="background:white;border:1px solid #e2e8f0;border-radius:6px;padding:4px 8px;font-size:10px;color:#374151;">风险等级 <span style="color:#9ca3af;">▾</span></div>
+          <div style="background:white;border:1px solid #e2e8f0;border-radius:6px;padding:4px 8px;font-size:10px;color:#374151;">状态 <span style="color:#9ca3af;">▾</span></div>
+          <div style="background:#ef4444;color:white;border-radius:6px;padding:4px 8px;font-size:10px;">清除筛选</div>
+        </div>
+        <div style="background:white;border-radius:6px;box-shadow:0 1px 3px rgba(0,0,0,0.08);overflow:hidden;">
+          <div style="display:grid;grid-template-columns:55px 1fr 45px 55px 55px 55px;padding:6px 10px;border-bottom:2px solid #f1f5f9;color:#9ca3af;font-size:9px;font-weight:600;">
+            <span>代码 ↕</span><span>名称 ↕</span><span>风险</span><span>净值</span><span>1年 ↕</span><span>YTD ↕</span>
+          </div>
+          <div style="display:grid;grid-template-columns:55px 1fr 45px 55px 55px 55px;padding:5px 10px;border-bottom:1px solid #f8fafc;font-size:9px;color:#374151;">
+            <span style="color:#2563eb;font-weight:500;">000011</span><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#6b7280;">华夏大盘精选</span><span><span style="background:#fef3c7;color:#92400e;padding:1px 4px;border-radius:3px;">R3</span></span><span>24.97</span><span style="color:#059669;font-weight:500;">+72%</span><span style="color:#059669;">+27%</span>
+          </div>
+          <div style="display:grid;grid-template-columns:55px 1fr 45px 55px 55px 55px;padding:5px 10px;border-bottom:1px solid #f8fafc;font-size:9px;color:#374151;background:#fafafa;">
+            <span style="color:#2563eb;font-weight:500;">000043</span><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#6b7280;">嘉实美国成长</span><span><span style="background:#fee2e2;color:#991b1b;padding:1px 4px;border-radius:3px;">R4</span></span><span>6.44</span><span style="color:#059669;font-weight:500;">+33%</span><span style="color:#059669;">+13%</span>
+          </div>
+          <div style="display:grid;grid-template-columns:55px 1fr 45px 55px 55px 55px;padding:5px 10px;font-size:9px;color:#374151;">
+            <span style="color:#2563eb;font-weight:500;">000051</span><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#6b7280;">华夏沪深300</span><span><span style="background:#fee2e2;color:#991b1b;padding:1px 4px;border-radius:3px;">R4</span></span><span>1.85</span><span style="color:#059669;font-weight:500;">+30%</span><span style="color:#059669;">+6%</span>
+          </div>
+        </div>
+        <div style="text-align:right;color:#9ca3af;font-size:9px;margin-top:5px;">共 598 只基金</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — 浅色清爽风</h3>
+      <p>白底卡片，彩色标签，类似现代 SaaS 后台。清晰直观，适合大众用户。</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);padding:12px;border-radius:6px;font-size:11px;color:#94a3b8;font-family:system-ui;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+          <span style="background:linear-gradient(135deg,#e63946,#c1121f);color:white;padding:3px 8px;border-radius:4px;font-weight:700;font-size:11px;">HSBC</span>
+          <span style="color:#94a3b8;font-size:10px;">汇丰基金快车</span>
+          <div style="margin-left:auto;background:rgba(255,255,255,0.1);border-radius:20px;padding:2px 10px;font-size:10px;color:#cbd5e1;">🔍 搜索</div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:8px;">
+          <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:6px;padding:5px;text-align:center;">
+            <div style="font-size:16px;font-weight:700;color:#60a5fa;">598</div>
+            <div style="font-size:8px;color:#64748b;">全部基金</div>
+          </div>
+          <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(99,102,241,0.4);border-radius:6px;padding:5px;text-align:center;">
+            <div style="font-size:16px;font-weight:700;color:#818cf8;">320</div>
+            <div style="font-size:8px;color:#64748b;">可申购</div>
+          </div>
+          <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(52,211,153,0.4);border-radius:6px;padding:5px;text-align:center;">
+            <div style="font-size:16px;font-weight:700;color:#34d399;">+18%</div>
+            <div style="font-size:8px;color:#64748b;">年均收益</div>
+          </div>
+        </div>
+        <div style="background:rgba(255,255,255,0.04);border-radius:6px;overflow:hidden;border:1px solid rgba(255,255,255,0.07);">
+          <div style="display:grid;grid-template-columns:55px 1fr 40px 55px 60px;padding:5px 8px;border-bottom:1px solid rgba(255,255,255,0.07);color:#475569;font-size:9px;">
+            <span>代码</span><span>名称</span><span>R</span><span>净值</span><span>1年收益</span>
+          </div>
+          <div style="display:grid;grid-template-columns:55px 1fr 40px 55px 60px;padding:4px 8px;font-size:9px;color:#e2e8f0;border-bottom:1px solid rgba(255,255,255,0.04);">
+            <span style="color:#818cf8;">000011</span><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#cbd5e1;">华夏大盘精选</span>
+            <span><span style="background:rgba(234,179,8,0.2);color:#fbbf24;padding:1px 4px;border-radius:3px;font-size:8px;">R3</span></span>
+            <span>24.97</span><span style="color:#34d399;font-weight:600;">▲ 72.56%</span>
+          </div>
+          <div style="display:grid;grid-template-columns:55px 1fr 40px 55px 60px;padding:4px 8px;font-size:9px;color:#e2e8f0;">
+            <span style="color:#818cf8;">000043</span><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#cbd5e1;">嘉实美国成长</span>
+            <span><span style="background:rgba(239,68,68,0.2);color:#f87171;padding:1px 4px;border-radius:3px;font-size:8px;">R4</span></span>
+            <span>6.44</span><span style="color:#34d399;font-weight:600;">▲ 32.98%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — 深色渐变科技风</h3>
+      <p>顶部统计卡片 + 深色表格，兼顾视觉冲击力与数据展示。介于 A 和 B 之间。</p>
+    </div>
+  </div>
+
+</div>
