@@ -1,5 +1,5 @@
-import * as Popover from '@base-ui/react/popover'
-import * as Checkbox from '@base-ui/react/checkbox'
+import { Popover } from '@base-ui/react/popover'
+import { Checkbox } from '@base-ui/react/checkbox'
 import type { VisibilityState } from '@tanstack/react-table'
 import { TOGGLEABLE_COLUMNS } from '../lib/columns'
 
@@ -17,7 +17,7 @@ type Props = {
 const COLUMN_LABELS: Record<string, string> = Object.fromEntries(
   TOGGLEABLE_COLUMNS.map(col => [
     col.id!,
-    typeof col.columnDef.header === 'string' ? col.columnDef.header : col.id!,
+    typeof col.header === 'string' ? col.header : col.id!,
   ])
 )
 
