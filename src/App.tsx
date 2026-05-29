@@ -97,7 +97,7 @@ export default function App() {
       <header className="bg-white border-b border-gray-200 px-6 py-3 flex items-center gap-4">
         <div className="flex items-center gap-2 shrink-0">
           <span className="bg-red-600 text-white text-xs font-bold px-2 py-0.5 rounded">HSBC</span>
-          <h1 className="text-base font-semibold text-gray-800">基金快车</h1>
+          <h1 className="text-base font-semibold text-gray-800">代销基金</h1>
         </div>
 
         <FilterBar

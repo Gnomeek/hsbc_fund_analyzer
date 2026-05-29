@@ -1,8 +1,11 @@
-# HSBC 基金快车
+# HSBC 代销基金汇总
+
+![Vercel Deploy](https://deploy-badge.vercel.app/vercel/hsbc-cn-funds)
+
+
+**Live demo:** https://ibkr-stats.vercel.app/
 
 > 汇丰中国代销基金的可视化分析工具，支持多维度筛选、业绩对比与文件直链。
-
-[![Vercel](https://img.shields.io/badge/Live-hsbc--fund--analyzer.vercel.app-black?logo=vercel)](https://hsbc-fund-analyzer.vercel.app)
 
 ---
 
