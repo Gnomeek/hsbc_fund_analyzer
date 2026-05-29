@@ -1,6 +1,6 @@
-import { useState } from "react";
-import { Popover } from "@base-ui/react/popover";
-import { Settings, GripVertical, Eye, EyeOff } from "lucide-react";
+import { useState } from 'react'
+import { Popover } from '@base-ui/react/popover'
+import { Settings, GripVertical, Eye, EyeOff } from 'lucide-react'
 import {
   DndContext,
   closestCenter,
@@ -8,36 +8,33 @@ import {
   useSensor,
   useSensors,
   type DragEndEvent,
-} from "@dnd-kit/core";
+} from '@dnd-kit/core'
 import {
   SortableContext,
   useSortable,
   verticalListSortingStrategy,
   arrayMove,
-} from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
-import type { VisibilityState } from "@tanstack/react-table";
-import { TOGGLEABLE_COLUMNS } from "../lib/columns";
+} from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
+import type { VisibilityState } from '@tanstack/react-table'
+import { TOGGLEABLE_COLUMNS } from '@/lib/columns'
 
 // ----------------------------------------------------------------
 // 列 id → 显示标题映射
 // ----------------------------------------------------------------
 const COLUMN_LABELS: Record<string, string> = Object.fromEntries(
-  TOGGLEABLE_COLUMNS.map((col) => [
-    col.id!,
-    typeof col.header === "string" ? col.header : col.id!,
-  ]),
-);
+  TOGGLEABLE_COLUMNS.map((col) => [col.id!, typeof col.header === 'string' ? col.header : col.id!]),
+)
 
 // ----------------------------------------------------------------
 // Props
 // ----------------------------------------------------------------
 type Props = {
-  columnVisibility: VisibilityState;
-  onColumnVisibilityChange: (v: VisibilityState) => void;
-  columnOrder: string[];
-  onColumnOrderChange: (ids: string[]) => void;
-};
+  columnVisibility: VisibilityState
+  onColumnVisibilityChange: (v: VisibilityState) => void
+  columnOrder: string[]
+  onColumnOrderChange: (ids: string[]) => void
+}
 
 // ----------------------------------------------------------------
 // SortableRow — 单行（可拖拽 + 可见性切换）
@@ -47,24 +44,19 @@ function SortableRow({
   visible,
   onToggle,
 }: {
-  id: string;
-  visible: boolean;
-  onToggle: () => void;
+  id: string
+  visible: boolean
+  onToggle: () => void
 }) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id });
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id,
+  })
 
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? 0.5 : 1,
-  };
+  }
 
   return (
     <div
@@ -76,7 +68,7 @@ function SortableRow({
       <button
         {...attributes}
         {...listeners}
-        className="text-gray-300 hover:text-gray-500 cursor-grab active:cursor-grabbing flex-shrink-0 touch-none"
+        className="text-gray-300 hover:text-gray-500 cursor-grab active:cursor-grabbing shrink-0 touch-none"
         tabIndex={-1}
         aria-label="拖动排序"
       >
@@ -86,24 +78,20 @@ function SortableRow({
       {/* 可见性切换 */}
       <button
         onClick={onToggle}
-        className={`flex-shrink-0 transition-colors ${
-          visible
-            ? "text-blue-600 hover:text-blue-800"
-            : "text-gray-300 hover:text-gray-500"
+        className={`shrink-0 transition-colors ${
+          visible ? 'text-blue-600 hover:text-blue-800' : 'text-gray-300 hover:text-gray-500'
         }`}
-        aria-label={visible ? "隐藏列" : "显示列"}
+        aria-label={visible ? '隐藏列' : '显示列'}
       >
         {visible ? <Eye size={14} /> : <EyeOff size={14} />}
       </button>
 
       {/* 列名 */}
-      <span
-        className={`text-sm select-none ${visible ? "text-gray-700" : "text-gray-400"}`}
-      >
+      <span className={`text-sm select-none ${visible ? 'text-gray-700' : 'text-gray-400'}`}>
         {COLUMN_LABELS[id] ?? id}
       </span>
     </div>
-  );
+  )
 }
 
 // ----------------------------------------------------------------
@@ -115,25 +103,23 @@ export function ColumnToggle({
   columnOrder,
   onColumnOrderChange,
 }: Props) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false)
 
-  const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
-  );
+  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }))
 
   function toggle(colId: string) {
     onColumnVisibilityChange({
       ...columnVisibility,
       [colId]: !columnVisibility[colId],
-    });
+    })
   }
 
   function handleDragEnd(event: DragEndEvent) {
-    const { active, over } = event;
+    const { active, over } = event
     if (over && active.id !== over.id) {
-      const oldIndex = columnOrder.indexOf(active.id as string);
-      const newIndex = columnOrder.indexOf(over.id as string);
-      onColumnOrderChange(arrayMove(columnOrder, oldIndex, newIndex));
+      const oldIndex = columnOrder.indexOf(active.id as string)
+      const newIndex = columnOrder.indexOf(over.id as string)
+      onColumnOrderChange(arrayMove(columnOrder, oldIndex, newIndex))
     }
   }
 
@@ -145,12 +131,7 @@ export function ColumnToggle({
       </Popover.Trigger>
 
       <Popover.Portal>
-        <Popover.Positioner
-          side="bottom"
-          align="end"
-          sideOffset={6}
-          className="z-[100]"
-        >
+        <Popover.Positioner side="bottom" align="end" sideOffset={6} className="z-100">
           <Popover.Popup className="bg-white border border-gray-200 rounded-lg shadow-lg p-2 w-48">
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide px-2 pt-1 pb-2">
               列顺序 / 显示
@@ -161,10 +142,7 @@ export function ColumnToggle({
               collisionDetection={closestCenter}
               onDragEnd={handleDragEnd}
             >
-              <SortableContext
-                items={columnOrder}
-                strategy={verticalListSortingStrategy}
-              >
+              <SortableContext items={columnOrder} strategy={verticalListSortingStrategy}>
                 {columnOrder.map((id) => (
                   <SortableRow
                     key={id}
@@ -179,5 +157,5 @@ export function ColumnToggle({
         </Popover.Positioner>
       </Popover.Portal>
     </Popover.Root>
-  );
+  )
 }

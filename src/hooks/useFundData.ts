@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
-import { parseCSV } from '../lib/parseCSV'
-import type { FundRow } from '../lib/types'
+import { parseCSV } from '@/lib/parseCSV'
+import type { FundRow } from '@/lib/types'
 
 type State =
   | { status: 'loading' }
@@ -12,12 +12,12 @@ export function useFundData(): State {
 
   useEffect(() => {
     fetch('/funds.csv')
-      .then(r => {
+      .then((r) => {
         if (!r.ok) throw new Error(`HTTP ${r.status}`)
         return r.text()
       })
-      .then(text => setState({ status: 'ok', data: parseCSV(text) }))
-      .catch(e => setState({ status: 'error', message: String(e) }))
+      .then((text) => setState({ status: 'ok', data: parseCSV(text) }))
+      .catch((e) => setState({ status: 'error', message: String(e) }))
   }, [])
 
   return state

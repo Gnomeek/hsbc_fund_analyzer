@@ -1,9 +1,9 @@
 import { useState, useMemo } from 'react'
 
-import { useFundData } from './hooks/useFundData'
-import { FundTable } from './components/FundTable'
-import { FilterBar } from './components/FilterBar'
-import { DEFAULT_VISIBLE_COLUMNS, ALL_COLUMNS, TOGGLEABLE_COLUMN_IDS } from './lib/columns'
+import { useFundData } from '@/hooks/useFundData'
+import { FundTable } from '@/components/FundTable'
+import { FilterBar } from '@/components/FilterBar'
+import { DEFAULT_VISIBLE_COLUMNS, ALL_COLUMNS, TOGGLEABLE_COLUMN_IDS } from '@/lib/columns'
 import type { SortingState, ColumnFiltersState, VisibilityState } from '@tanstack/react-table'
 
 const STORAGE_KEY = 'hsbc_fund_column_prefs'
@@ -28,7 +28,9 @@ function loadPrefs(): { visibility?: VisibilityState; order?: string[] } {
 function savePrefs(visibility: VisibilityState, order: string[]) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ visibility, order }))
-  } catch {}
+  } catch {
+    // ignore write errors (e.g. private browsing quota)
+  }
 }
 
 // 将已保存的顺序与当前列定义合并：删除已不存在的列，追加新增列到末尾

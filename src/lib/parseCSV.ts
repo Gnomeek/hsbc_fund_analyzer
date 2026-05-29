@@ -1,4 +1,4 @@
-import type { FundRow } from './types'
+import type { FundRow } from '@/lib/types'
 
 function parsePerf(val: string): number | null {
   const s = val.trim()

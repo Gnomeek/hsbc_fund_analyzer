@@ -11,11 +11,11 @@ import {
   type VisibilityState,
 } from '@tanstack/react-table'
 import { useVirtualizer } from '@tanstack/react-virtual'
-import type { FundRow } from '../lib/types'
-import { ALL_COLUMNS } from '../lib/columns'
-import { PerfCell } from './PerfCell'
-import { StatusBadge } from './StatusBadge'
-import { RiskBadge } from './RiskBadge'
+import type { FundRow } from '@/lib/types'
+import { ALL_COLUMNS } from '@/lib/columns'
+import { PerfCell } from '@/components/PerfCell'
+import { StatusBadge } from '@/components/StatusBadge'
+import { RiskBadge } from '@/components/RiskBadge'
 
 const DOMICILE_LABEL: Record<string, string> = {
   'Mainland Securities Fund': '内地基金',
@@ -166,7 +166,7 @@ export function FundTable({
                           <span className="truncate">
                             {flexRender(header.column.columnDef.header, header.getContext())}
                           </span>
-                          <span className="text-gray-400 flex-shrink-0">
+                          <span className="text-gray-400 shrink-0">
                             {sorted === 'asc' ? (
                               <ArrowUp size={12} />
                             ) : sorted === 'desc' ? (
@@ -227,7 +227,7 @@ export function FundTable({
                               title="在雪球查看"
                             >
                               {String(value)}
-                              <ExternalLink size={11} className="flex-shrink-0 opacity-60" />
+                              <ExternalLink size={11} className="shrink-0 opacity-60" />
                             </a>
                           ) : (
                             <span className="font-mono text-gray-700">{String(value)}</span>

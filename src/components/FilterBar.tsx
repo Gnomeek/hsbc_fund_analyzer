@@ -1,41 +1,41 @@
-import { useRef, useEffect, useState } from "react";
-import { Field } from "@base-ui/react/field";
-import { Popover } from "@base-ui/react/popover";
-import type { VisibilityState } from "@tanstack/react-table";
-import { Search, ChevronDown, Check } from "lucide-react";
-import { ColumnToggle } from "./ColumnToggle";
+import { useRef, useEffect, useState } from 'react'
+import { Field } from '@base-ui/react/field'
+import { Popover } from '@base-ui/react/popover'
+import type { VisibilityState } from '@tanstack/react-table'
+import { Search, ChevronDown, Check } from 'lucide-react'
+import { ColumnToggle } from '@/components/ColumnToggle'
 
 // ----------------------------------------------------------------
 // 筛选常量
 // ----------------------------------------------------------------
-const RISK_OPTIONS = [1, 2, 3, 4, 5];
+const RISK_OPTIONS = [1, 2, 3, 4, 5]
 const STATUS_OPTIONS = [
-  { value: "suspended", label: "暂停申购" },
-  { value: "online_only", label: "仅电子渠道" },
-  { value: "qdii", label: "QDII" },
-];
+  { value: 'suspended', label: '暂停申购' },
+  { value: 'online_only', label: '仅电子渠道' },
+  { value: 'qdii', label: 'QDII' },
+]
 const DOMICILE_OPTIONS = [
-  { value: "Mainland Securities Fund", label: "内地基金" },
-  { value: "HK Mutual Recognition Fund", label: "香港互认基金" },
-];
+  { value: 'Mainland Securities Fund', label: '内地基金' },
+  { value: 'HK Mutual Recognition Fund', label: '香港互认基金' },
+]
 
 // ----------------------------------------------------------------
 // FilterBar Props
 // ----------------------------------------------------------------
 type Props = {
-  search: string;
-  onSearchChange: (v: string) => void;
-  riskLevels: number[];
-  onRiskLevelsChange: (v: number[]) => void;
-  statuses: string[];
-  onStatusesChange: (v: string[]) => void;
-  domiciles: string[];
-  onDomicilesChange: (v: string[]) => void;
-  columnVisibility: VisibilityState;
-  onColumnVisibilityChange: (v: VisibilityState) => void;
-  columnOrder: string[];
-  onColumnOrderChange: (ids: string[]) => void;
-};
+  search: string
+  onSearchChange: (v: string) => void
+  riskLevels: number[]
+  onRiskLevelsChange: (v: number[]) => void
+  statuses: string[]
+  onStatusesChange: (v: string[]) => void
+  domiciles: string[]
+  onDomicilesChange: (v: string[]) => void
+  columnVisibility: VisibilityState
+  onColumnVisibilityChange: (v: VisibilityState) => void
+  columnOrder: string[]
+  onColumnOrderChange: (ids: string[]) => void
+}
 
 // ----------------------------------------------------------------
 // MultiSelect — 通用多选下拉组件
@@ -46,17 +46,13 @@ function MultiSelect<T extends string | number>({
   selected,
   onChange,
 }: {
-  label: string;
-  options: { value: T; label: string }[];
-  selected: T[];
-  onChange: (v: T[]) => void;
+  label: string
+  options: { value: T; label: string }[]
+  selected: T[]
+  onChange: (v: T[]) => void
 }) {
   function toggle(val: T) {
-    onChange(
-      selected.includes(val)
-        ? selected.filter((v) => v !== val)
-        : [...selected, val],
-    );
+    onChange(selected.includes(val) ? selected.filter((v) => v !== val) : [...selected, val])
   }
 
   const displayLabel =
@@ -64,7 +60,7 @@ function MultiSelect<T extends string | number>({
       ? label
       : selected.length === options.length
         ? `${label}：全部`
-        : `${label} (${selected.length})`;
+        : `${label} (${selected.length})`
 
   return (
     <Popover.Root>
@@ -73,12 +69,7 @@ function MultiSelect<T extends string | number>({
         <ChevronDown size={13} className="text-gray-400" />
       </Popover.Trigger>
       <Popover.Portal>
-        <Popover.Positioner
-          side="bottom"
-          align="start"
-          sideOffset={4}
-          className="z-[100]"
-        >
+        <Popover.Positioner side="bottom" align="start" sideOffset={4} className="z-100">
           <Popover.Popup className="bg-white border border-gray-200 rounded-lg shadow-lg py-1 min-w-36 z-50">
             {options.map((opt) => (
               <div
@@ -89,15 +80,11 @@ function MultiSelect<T extends string | number>({
                 <span
                   className={`w-4 h-4 border rounded flex items-center justify-center text-xs ${
                     selected.includes(opt.value)
-                      ? "bg-blue-600 border-blue-600 text-white"
-                      : "border-gray-300"
+                      ? 'bg-blue-600 border-blue-600 text-white'
+                      : 'border-gray-300'
                   }`}
                 >
-                  {selected.includes(opt.value) ? (
-                    <Check size={10} strokeWidth={3} />
-                  ) : (
-                    ""
-                  )}
+                  {selected.includes(opt.value) ? <Check size={10} strokeWidth={3} /> : ''}
                 </span>
                 {opt.label}
               </div>
@@ -106,7 +93,7 @@ function MultiSelect<T extends string | number>({
         </Popover.Positioner>
       </Popover.Portal>
     </Popover.Root>
-  );
+  )
 }
 
 // ----------------------------------------------------------------
@@ -126,31 +113,26 @@ export function FilterBar({
   columnOrder,
   onColumnOrderChange,
 }: Props) {
-  const [localSearch, setLocalSearch] = useState(search);
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [localSearch, setLocalSearch] = useState(search)
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   // 300ms 防抖上报搜索词
   useEffect(() => {
-    if (timerRef.current) clearTimeout(timerRef.current);
-    timerRef.current = setTimeout(() => onSearchChange(localSearch), 300);
+    if (timerRef.current) clearTimeout(timerRef.current)
+    timerRef.current = setTimeout(() => onSearchChange(localSearch), 300)
     return () => {
-      if (timerRef.current) clearTimeout(timerRef.current);
-    };
-  }, [localSearch, onSearchChange]);
+      if (timerRef.current) clearTimeout(timerRef.current)
+    }
+  }, [localSearch, onSearchChange])
 
-  const hasFilter = !!(
-    search ||
-    riskLevels.length ||
-    statuses.length ||
-    domiciles.length
-  );
+  const hasFilter = !!(search || riskLevels.length || statuses.length || domiciles.length)
 
   function clearAll() {
-    setLocalSearch("");
-    onSearchChange("");
-    onRiskLevelsChange([]);
-    onStatusesChange([]);
-    onDomicilesChange([]);
+    setLocalSearch('')
+    onSearchChange('')
+    onRiskLevelsChange([])
+    onStatusesChange([])
+    onDomicilesChange([])
   }
 
   return (
@@ -162,9 +144,7 @@ export function FilterBar({
         </span>
         <Field.Control
           value={localSearch}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-            setLocalSearch(e.target.value)
-          }
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setLocalSearch(e.target.value)}
           placeholder="搜索基金代码或名称…"
           className="px-2 py-1.5 text-sm outline-none bg-transparent w-52"
         />
@@ -212,5 +192,5 @@ export function FilterBar({
         </button>
       )}
     </div>
-  );
+  )
 }
