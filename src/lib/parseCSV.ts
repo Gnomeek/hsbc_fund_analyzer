@@ -6,14 +6,40 @@ function parsePerf(val: string): number | null {
   return parseFloat(s.replace('+', ''))
 }
 
+// 正确处理 RFC 4180 引号字段（字段内含逗号或换行）
+function splitCSVLine(line: string): string[] {
+  const result: string[] = []
+  let current = ''
+  let inQuotes = false
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i]
+    if (ch === '"') {
+      if (inQuotes && line[i + 1] === '"') {
+        current += '"'
+        i++ // 转义双引号
+      } else {
+        inQuotes = !inQuotes
+      }
+    } else if (ch === ',' && !inQuotes) {
+      result.push(current)
+      current = ''
+    } else {
+      current += ch
+    }
+  }
+  result.push(current)
+  return result
+}
+
 export function parseCSV(text: string): FundRow[] {
   const lines = text.replace(/\r\n/g, '\n').split('\n')
-  const headers = lines[0].replace(/^﻿/, '').split(',')
+  const headers = splitCSVLine(lines[0].replace(/\uFEFF/, ''))
 
-  return lines.slice(1)
-    .filter(line => line.trim())
-    .map(line => {
-      const cells = line.split(',')
+  return lines
+    .slice(1)
+    .filter((line) => line.trim())
+    .map((line) => {
+      const cells = splitCSVLine(line)
       const get = (col: string) => cells[headers.indexOf(col)]?.trim() ?? ''
 
       return {
@@ -37,6 +63,15 @@ export function parseCSV(text: string): FundRow[] {
         annual_return_2025_pct: parsePerf(get('annual_return_2025_pct')),
         fund_detail_url: get('fund_detail_url'),
         xueqiu_link: get('xueqiu_link'),
+        doc_prospectus: get('doc_prospectus'),
+        doc_annual_report: get('doc_annual_report'),
+        doc_quarterly_report: get('doc_quarterly_report'),
+        doc_semi_annual_report: get('doc_semi_annual_report'),
+        doc_monthly_report: get('doc_monthly_report'),
+        doc_fund_contract: get('doc_fund_contract'),
+        doc_product_summary: get('doc_product_summary'),
+        doc_offering_announcement: get('doc_offering_announcement'),
+        doc_all_announcements: get('doc_all_announcements'),
       }
     })
 }
