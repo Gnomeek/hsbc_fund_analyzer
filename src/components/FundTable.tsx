@@ -235,7 +235,7 @@ export function FundTable({
                     return (
                       <td
                         key={cell.id}
-                        style={{ minWidth: cell.column.getSize() }}
+                        style={{ width: cell.column.getSize() }}
                         className={`px-3 py-2 overflow-hidden ${
                           colId === 'fund_status'
                             ? 'align-middle'
