@@ -2,6 +2,16 @@ import { driver } from 'driver.js'
 
 export const TOUR_KEY = 'hsbc_fund_tour_done'
 
+// DOM 里同一个 data-tour 可能出现两次（desktop hidden + mobile visible），取可见的那个
+function visibleEl(key: string): Element {
+  const all = document.querySelectorAll(`[data-tour="${key}"]`)
+  for (const el of all) {
+    const rect = (el as HTMLElement).getBoundingClientRect()
+    if (rect.width > 0 && rect.height > 0) return el
+  }
+  return all[0]
+}
+
 let tourActive = false
 
 export function startTour(onBeforeStart?: () => Promise<void>) {
@@ -27,7 +37,7 @@ export function startTour(onBeforeStart?: () => Promise<void>) {
     },
     steps: [
       {
-        element: '[data-tour="search"]',
+        element: () => visibleEl('search'),
         popover: {
           title: '搜索基金',
           description: '按基金代码或名称搜索，支持中英文',
@@ -36,7 +46,7 @@ export function startTour(onBeforeStart?: () => Promise<void>) {
         },
       },
       {
-        element: '[data-tour="filter-status"]',
+        element: () => visibleEl('filter-status'),
         popover: {
           title: '标签筛选',
           description: '选择状态后，可点击底部开关切换"包含/排除"模式',
@@ -45,7 +55,7 @@ export function startTour(onBeforeStart?: () => Promise<void>) {
         },
       },
       {
-        element: '[data-tour="filter-risk"]',
+        element: () => visibleEl('filter-risk'),
         popover: {
           title: '风险等级筛选',
           description: '同样支持包含/排除切换',
@@ -54,7 +64,7 @@ export function startTour(onBeforeStart?: () => Promise<void>) {
         },
       },
       {
-        element: '[data-tour="column-toggle"]',
+        element: () => visibleEl('column-toggle'),
         popover: {
           title: '列显示设置',
           description: '显示/隐藏列，并可拖拽排序',
@@ -63,7 +73,7 @@ export function startTour(onBeforeStart?: () => Promise<void>) {
         },
       },
       {
-        element: '[data-tour="table-header"]',
+        element: () => visibleEl('table-header'),
         popover: {
           title: '排序 & 调整列宽',
           description: '点击列头排序，拖拽列头右边缘调整列宽',
@@ -72,7 +82,7 @@ export function startTour(onBeforeStart?: () => Promise<void>) {
         },
       },
       {
-        element: '[data-tour="result-count"]',
+        element: () => visibleEl('result-count'),
         popover: {
           title: '筛选结果',
           description: '实时显示当前条件下的基金数量',
