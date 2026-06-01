@@ -50,6 +50,9 @@ export default function App() {
   const [riskLevels, setRiskLevels] = useState<number[]>([])
   const [statuses, setStatuses] = useState<string[]>([])
   const [domiciles, setDomiciles] = useState<string[]>([])
+  const [riskMode, setRiskMode] = useState<'include' | 'exclude'>('include')
+  const [statusMode, setStatusMode] = useState<'include' | 'exclude'>('include')
+  const [domicileMode, setDomicileMode] = useState<'include' | 'exclude'>('include')
   const [sorting, setSorting] = useState<SortingState>([])
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false)
 
@@ -94,12 +97,21 @@ export default function App() {
   const filteredData = useMemo(() => {
     if (state.status !== 'ok' && state.status !== 'streaming') return []
     return state.data.filter((row) => {
-      if (riskLevels.length && !riskLevels.includes(row.risk_level)) return false
-      if (statuses.length && !statuses.some((s) => row.fund_status.includes(s))) return false
-      if (domiciles.length && !domiciles.includes(row.fund_domicile)) return false
+      if (riskLevels.length) {
+        const matches = riskLevels.includes(row.risk_level)
+        if (riskMode === 'include' ? !matches : matches) return false
+      }
+      if (statuses.length) {
+        const matches = statuses.some((s) => row.fund_status.includes(s))
+        if (statusMode === 'include' ? !matches : matches) return false
+      }
+      if (domiciles.length) {
+        const matches = domiciles.includes(row.fund_domicile)
+        if (domicileMode === 'include' ? !matches : matches) return false
+      }
       return true
     })
-  }, [state, riskLevels, statuses, domiciles])
+  }, [state, riskLevels, riskMode, statuses, statusMode, domiciles, domicileMode])
 
   if (state.status === 'loading') return <LoadingPage />
   if (state.status === 'streaming' && state.data.length === 0)
@@ -113,10 +125,16 @@ export default function App() {
     onSearchChange: setSearch,
     riskLevels,
     onRiskLevelsChange: setRiskLevels,
+    riskMode,
+    onRiskModeChange: setRiskMode,
     statuses,
     onStatusesChange: setStatuses,
+    statusMode,
+    onStatusModeChange: setStatusMode,
     domiciles,
     onDomicilesChange: setDomiciles,
+    domicileMode,
+    onDomicileModeChange: setDomicileMode,
     columnVisibility,
     onColumnVisibilityChange: handleVisibilityChange,
     columnOrder: toggleableColOrder,

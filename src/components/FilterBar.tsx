@@ -27,10 +27,16 @@ type Props = {
   onSearchChange: (v: string) => void
   riskLevels: number[]
   onRiskLevelsChange: (v: number[]) => void
+  riskMode: 'include' | 'exclude'
+  onRiskModeChange: (m: 'include' | 'exclude') => void
   statuses: string[]
   onStatusesChange: (v: string[]) => void
+  statusMode: 'include' | 'exclude'
+  onStatusModeChange: (m: 'include' | 'exclude') => void
   domiciles: string[]
   onDomicilesChange: (v: string[]) => void
+  domicileMode: 'include' | 'exclude'
+  onDomicileModeChange: (m: 'include' | 'exclude') => void
   columnVisibility: VisibilityState
   onColumnVisibilityChange: (v: VisibilityState) => void
   columnOrder: string[]
@@ -38,18 +44,22 @@ type Props = {
 }
 
 // ----------------------------------------------------------------
-// MultiSelect — 通用多选下拉
+// MultiSelect — 通用多选下拉（支持包含/排除模式）
 // ----------------------------------------------------------------
 function MultiSelect<T extends string | number>({
   label,
   options,
   selected,
   onChange,
+  mode = 'include',
+  onModeChange,
 }: {
   label: string
   options: { value: T; label: string }[]
   selected: T[]
   onChange: (v: T[]) => void
+  mode?: 'include' | 'exclude'
+  onModeChange?: (m: 'include' | 'exclude') => void
 }) {
   function toggle(val: T) {
     onChange(selected.includes(val) ? selected.filter((v) => v !== val) : [...selected, val])
@@ -60,11 +70,19 @@ function MultiSelect<T extends string | number>({
       ? label
       : selected.length === options.length
         ? `${label}：全部`
-        : `${label} (${selected.length})`
+        : mode === 'exclude'
+          ? `排除 ${label} (${selected.length})`
+          : `${label} (${selected.length})`
 
   return (
     <Popover.Root>
-      <Popover.Trigger className="flex items-center gap-1.5 px-3 py-2 md:py-1.5 text-sm border border-gray-300 rounded-md hover:bg-gray-50 active:bg-gray-100 transition-colors text-gray-700 min-w-max touch-manipulation">
+      <Popover.Trigger
+        className={`flex items-center gap-1.5 px-3 py-2 md:py-1.5 text-sm border rounded-md hover:bg-gray-50 active:bg-gray-100 transition-colors min-w-max touch-manipulation ${
+          selected.length > 0 && mode === 'exclude'
+            ? 'border-orange-300 text-orange-700'
+            : 'border-gray-300 text-gray-700'
+        }`}
+      >
         <span>{displayLabel}</span>
         <ChevronDown size={13} className="text-gray-400 shrink-0" />
       </Popover.Trigger>
@@ -89,6 +107,30 @@ function MultiSelect<T extends string | number>({
                 {opt.label}
               </div>
             ))}
+            {selected.length > 0 && onModeChange && (
+              <>
+                <div className="border-t border-gray-100 my-1" />
+                <div
+                  onClick={() => onModeChange(mode === 'include' ? 'exclude' : 'include')}
+                  className="flex items-center gap-2 px-3 py-2 md:py-1.5 text-xs cursor-pointer hover:bg-gray-50 select-none touch-manipulation"
+                >
+                  <span
+                    className={`w-8 h-4 rounded-full flex items-center transition-colors ${
+                      mode === 'exclude' ? 'bg-orange-400' : 'bg-blue-500'
+                    }`}
+                  >
+                    <span
+                      className={`w-3 h-3 bg-white rounded-full shadow transition-transform mx-0.5 ${
+                        mode === 'exclude' ? 'translate-x-4' : 'translate-x-0'
+                      }`}
+                    />
+                  </span>
+                  <span className={mode === 'exclude' ? 'text-orange-600' : 'text-blue-600'}>
+                    {mode === 'exclude' ? '排除模式' : '包含模式'}
+                  </span>
+                </div>
+              </>
+            )}
           </Popover.Popup>
         </Popover.Positioner>
       </Popover.Portal>
@@ -104,10 +146,16 @@ export function FilterBar({
   onSearchChange,
   riskLevels,
   onRiskLevelsChange,
+  riskMode,
+  onRiskModeChange,
   statuses,
   onStatusesChange,
+  statusMode,
+  onStatusModeChange,
   domiciles,
   onDomicilesChange,
+  domicileMode,
+  onDomicileModeChange,
   columnVisibility,
   onColumnVisibilityChange,
   columnOrder,
@@ -130,14 +178,20 @@ export function FilterBar({
     setLocalSearch('')
     onSearchChange('')
     onRiskLevelsChange([])
+    onRiskModeChange('include')
     onStatusesChange([])
+    onStatusModeChange('include')
     onDomicilesChange([])
+    onDomicileModeChange('include')
   }
 
   return (
     <div className="flex flex-col gap-2 w-full md:flex-row md:flex-wrap md:items-center">
       {/* 搜索框 — 移动端占满宽度 */}
-      <Field.Root className="flex items-center border border-gray-300 rounded-md overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 transition-all flex-1 md:flex-none">
+      <Field.Root
+        data-tour="search"
+        className="flex items-center border border-gray-300 rounded-md overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 transition-all flex-1 md:flex-none"
+      >
         <span className="pl-3 shrink-0">
           <Search size={15} className="text-gray-400" />
         </span>
@@ -160,30 +214,42 @@ export function FilterBar({
 
       {/* 筛选按钮组 — 横向滚动 */}
       <div className="flex items-center gap-2 overflow-x-auto pb-0.5 md:pb-0 scrollbar-none">
-        <MultiSelect
-          label="风险等级"
-          options={RISK_OPTIONS.map((r) => ({ value: r, label: `R${r}` }))}
-          selected={riskLevels}
-          onChange={onRiskLevelsChange}
-        />
-        <MultiSelect
-          label="状态"
-          options={STATUS_OPTIONS}
-          selected={statuses}
-          onChange={onStatusesChange}
-        />
+        <div data-tour="filter-risk">
+          <MultiSelect
+            label="风险等级"
+            options={RISK_OPTIONS.map((r) => ({ value: r, label: `R${r}` }))}
+            selected={riskLevels}
+            onChange={onRiskLevelsChange}
+            mode={riskMode}
+            onModeChange={onRiskModeChange}
+          />
+        </div>
+        <div data-tour="filter-status">
+          <MultiSelect
+            label="状态"
+            options={STATUS_OPTIONS}
+            selected={statuses}
+            onChange={onStatusesChange}
+            mode={statusMode}
+            onModeChange={onStatusModeChange}
+          />
+        </div>
         <MultiSelect
           label="类别"
           options={DOMICILE_OPTIONS}
           selected={domiciles}
           onChange={onDomicilesChange}
+          mode={domicileMode}
+          onModeChange={onDomicileModeChange}
         />
-        <ColumnToggle
-          columnVisibility={columnVisibility}
-          onColumnVisibilityChange={onColumnVisibilityChange}
-          columnOrder={columnOrder}
-          onColumnOrderChange={onColumnOrderChange}
-        />
+        <div data-tour="column-toggle">
+          <ColumnToggle
+            columnVisibility={columnVisibility}
+            onColumnVisibilityChange={onColumnVisibilityChange}
+            columnOrder={columnOrder}
+            onColumnOrderChange={onColumnOrderChange}
+          />
+        </div>
         {hasFilter && (
           <button
             onClick={clearAll}
