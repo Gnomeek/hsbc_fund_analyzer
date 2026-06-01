@@ -35,6 +35,8 @@ body {
 .hsbc-tour-popover .driver-popover-next-btn {
   background-color: #dc2626;
   border-color: #dc2626;
+  color: white;
+  text-shadow: none;
 }
 .hsbc-tour-popover .driver-popover-next-btn:hover {
   background-color: #b91c1c;
