@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useRef, CSSProperties } from 'react'
 import { ArrowUp, ArrowDown, ArrowUpDown, ExternalLink } from 'lucide-react'
 import {
   flexRender,
@@ -153,6 +153,9 @@ export function FundTable({
             tableLayout: 'fixed',
             width: table.getVisibleLeafColumns().reduce((sum, col) => sum + col.getSize(), 0),
             minWidth: '100%',
+            ...(Object.fromEntries(
+              table.getVisibleLeafColumns().map((col) => [`--col-${col.id}-size`, `${col.getSize()}`])
+            ) as CSSProperties),
           }}
         >
           <thead className="sticky top-0 bg-white z-10 shadow-sm">
@@ -166,7 +169,7 @@ export function FundTable({
                       key={header.id}
                       data-tour={idx === 0 ? 'table-header' : undefined}
                       style={{
-                        width: header.getSize(),
+                        width: `calc(var(--col-${header.column.id}-size) * 1px)`,
                         minWidth: header.column.columnDef.minSize,
                         position: 'relative',
                       }}
@@ -235,7 +238,7 @@ export function FundTable({
                     return (
                       <td
                         key={cell.id}
-                        style={{ width: cell.column.getSize() }}
+                        style={{ width: `calc(var(--col-${cell.column.id}-size) * 1px)` }}
                         className={`px-3 py-2 overflow-hidden ${
                           colId === 'fund_status'
                             ? 'align-middle'
