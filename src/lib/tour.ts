@@ -4,9 +4,14 @@ export const TOUR_KEY = 'hsbc_fund_tour_done'
 
 let tourActive = false
 
-export function startTour() {
+export function startTour(onBeforeStart?: () => Promise<void>) {
   if (tourActive) return
   tourActive = true
+
+  async function launch() {
+    if (onBeforeStart) await onBeforeStart()
+    driverObj.drive()
+  }
 
   const driverObj = driver({
     showProgress: true,
@@ -78,5 +83,5 @@ export function startTour() {
     ],
   })
 
-  driverObj.drive()
+  launch()
 }

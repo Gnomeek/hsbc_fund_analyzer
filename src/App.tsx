@@ -107,10 +107,17 @@ export default function App() {
   const isReady = state.status === 'ok' ||
     (state.status === 'streaming' && state.data.length > 0)
 
+  function openMobileFiltersForTour(): Promise<void> {
+    const isMobile = window.innerWidth < 768
+    if (!isMobile) return Promise.resolve()
+    setMobileFilterOpen(true)
+    return new Promise((resolve) => setTimeout(resolve, 350))
+  }
+
   useEffect(() => {
     if (!isReady) return
     if (localStorage.getItem(TOUR_KEY)) return
-    const t = setTimeout(startTour, 300)
+    const t = setTimeout(() => startTour(openMobileFiltersForTour), 300)
     return () => clearTimeout(t)
   }, [isReady])
 
@@ -198,7 +205,7 @@ export default function App() {
 
         {/* 功能导览 */}
         <button
-          onClick={startTour}
+          onClick={() => startTour(openMobileFiltersForTour)}
           className="shrink-0 text-gray-400 hover:text-gray-700 transition-colors"
           aria-label="功能导览"
           title="功能导览"
