@@ -19,7 +19,7 @@ function buildInitialVisibility(): VisibilityState {
   )
 }
 
-function loadPrefs(): { visibility?: VisibilityState; order?: string[]; sizing?: ColumnSizingState } {
+function loadPrefs(): { visibility?: VisibilityState; order?: string[] } {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
     return raw ? JSON.parse(raw) : {}
@@ -28,16 +28,10 @@ function loadPrefs(): { visibility?: VisibilityState; order?: string[]; sizing?:
   }
 }
 
-function savePrefs(visibility: VisibilityState, order: string[], sizing: ColumnSizingState) {
+function savePrefs(visibility: VisibilityState, order: string[]) {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ visibility, order, sizing }))
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ visibility, order }))
   } catch {}
-}
-
-let savePrefTimer: ReturnType<typeof setTimeout> | null = null
-function savePrefsDebounced(visibility: VisibilityState, order: string[], sizing: ColumnSizingState) {
-  if (savePrefTimer) clearTimeout(savePrefTimer)
-  savePrefTimer = setTimeout(() => savePrefs(visibility, order, sizing), 400)
 }
 
 function mergeOrder(saved: string[], current: string[]): string[] {
@@ -73,26 +67,19 @@ export default function App() {
     return prefs.order ? mergeOrder(prefs.order, TOGGLEABLE_COLUMN_IDS) : TOGGLEABLE_COLUMN_IDS
   })
 
-  const [columnSizing, setColumnSizing] = useState<ColumnSizingState>(() => {
-    const prefs = loadPrefs()
-    return prefs.sizing ?? {}
-  })
+  const [columnSizing, setColumnSizing] = useState<ColumnSizingState>({})
+  const handleSizingChange = setColumnSizing
 
   const columnOrder = ['fund_code', 'fund_name_clean', ...toggleableColOrder]
 
   function handleVisibilityChange(v: VisibilityState) {
     setColumnVisibility(v)
-    savePrefs(v, toggleableColOrder, columnSizing)
+    savePrefs(v, toggleableColOrder)
   }
 
   function handleOrderChange(ids: string[]) {
     setToggleableColOrder(ids)
-    savePrefs(columnVisibility, ids, columnSizing)
-  }
-
-  function handleSizingChange(s: ColumnSizingState) {
-    setColumnSizing(s)
-    savePrefsDebounced(columnVisibility, toggleableColOrder, s)
+    savePrefs(columnVisibility, ids)
   }
 
   function handleRiskLevelsChange(v: number[]) {
