@@ -40,7 +40,7 @@ export function startTour(onBeforeStart?: () => Promise<void>) {
         element: () => visibleEl('search'),
         popover: {
           title: '搜索基金',
-          description: '按基金代码或名称搜索，支持中英文',
+          description: '按基金代码或名称搜索',
           side: 'bottom',
           align: 'start',
         },
