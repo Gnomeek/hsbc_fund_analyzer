@@ -1,4 +1,4 @@
-import { useRef, CSSProperties } from 'react'
+import { useRef, type CSSProperties } from 'react'
 import { ArrowUp, ArrowDown, ArrowUpDown, ExternalLink } from 'lucide-react'
 import {
   flexRender,
