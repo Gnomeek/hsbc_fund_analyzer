@@ -2,8 +2,12 @@ import { driver } from 'driver.js'
 
 export const TOUR_KEY = 'hsbc_fund_tour_done'
 
+let tourActive = false
+
 export function startTour() {
-  if (document.body.classList.contains('driver-active')) return
+  if (tourActive) return
+  tourActive = true
+
   const driverObj = driver({
     showProgress: true,
     animate: true,
@@ -12,9 +16,9 @@ export function startTour() {
     nextBtnText: '下一步',
     prevBtnText: '上一步',
     doneBtnText: '完成',
-    onDestroyStarted: () => {
+    onDestroyed: () => {
+      tourActive = false
       localStorage.setItem(TOUR_KEY, '1')
-      driverObj.destroy()
     },
     steps: [
       {

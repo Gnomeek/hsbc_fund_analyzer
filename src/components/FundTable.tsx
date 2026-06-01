@@ -67,7 +67,7 @@ export function FundTable({
   const table = useReactTable({
     data,
     columns: ALL_COLUMNS,
-    columnResizeMode: 'onChange',
+    columnResizeMode: 'onEnd',
     state: {
       globalFilter,
       columnFilters,
