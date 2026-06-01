@@ -34,6 +34,12 @@ function savePrefs(visibility: VisibilityState, order: string[], sizing: ColumnS
   } catch {}
 }
 
+let savePrefTimer: ReturnType<typeof setTimeout> | null = null
+function savePrefsDebounced(visibility: VisibilityState, order: string[], sizing: ColumnSizingState) {
+  if (savePrefTimer) clearTimeout(savePrefTimer)
+  savePrefTimer = setTimeout(() => savePrefs(visibility, order, sizing), 400)
+}
+
 function mergeOrder(saved: string[], current: string[]): string[] {
   const currentSet = new Set(current)
   const result = saved.filter((id) => currentSet.has(id))
@@ -86,7 +92,7 @@ export default function App() {
 
   function handleSizingChange(s: ColumnSizingState) {
     setColumnSizing(s)
-    savePrefs(columnVisibility, toggleableColOrder, s)
+    savePrefsDebounced(columnVisibility, toggleableColOrder, s)
   }
 
   function handleRiskLevelsChange(v: number[]) {
