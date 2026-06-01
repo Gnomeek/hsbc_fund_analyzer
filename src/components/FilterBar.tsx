@@ -111,7 +111,16 @@ function MultiSelect<T extends string | number>({
               <>
                 <div className="border-t border-gray-100 my-1" />
                 <div
+                  role="switch"
+                  aria-checked={mode === 'exclude'}
+                  tabIndex={0}
                   onClick={() => onModeChange(mode === 'include' ? 'exclude' : 'include')}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault()
+                      onModeChange(mode === 'include' ? 'exclude' : 'include')
+                    }
+                  }}
                   className="flex items-center gap-2 px-3 py-2 md:py-1.5 text-xs cursor-pointer hover:bg-gray-50 select-none touch-manipulation"
                 >
                   <span

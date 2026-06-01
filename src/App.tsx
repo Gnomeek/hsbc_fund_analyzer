@@ -88,6 +88,21 @@ export default function App() {
     savePrefs(columnVisibility, toggleableColOrder, s)
   }
 
+  function handleRiskLevelsChange(v: number[]) {
+    setRiskLevels(v)
+    if (v.length === 0) setRiskMode('include')
+  }
+
+  function handleStatusesChange(v: string[]) {
+    setStatuses(v)
+    if (v.length === 0) setStatusMode('include')
+  }
+
+  function handleDomicilesChange(v: string[]) {
+    setDomiciles(v)
+    if (v.length === 0) setDomicileMode('include')
+  }
+
   const isStreaming = state.status === 'streaming'
   const streamLoaded = isStreaming ? state.loaded : null
   const streamTotal = isStreaming ? state.total : null
@@ -124,15 +139,15 @@ export default function App() {
     search,
     onSearchChange: setSearch,
     riskLevels,
-    onRiskLevelsChange: setRiskLevels,
+    onRiskLevelsChange: handleRiskLevelsChange,
     riskMode,
     onRiskModeChange: setRiskMode,
     statuses,
-    onStatusesChange: setStatuses,
+    onStatusesChange: handleStatusesChange,
     statusMode,
     onStatusModeChange: setStatusMode,
     domiciles,
-    onDomicilesChange: setDomiciles,
+    onDomicilesChange: handleDomicilesChange,
     domicileMode,
     onDomicileModeChange: setDomicileMode,
     columnVisibility,
