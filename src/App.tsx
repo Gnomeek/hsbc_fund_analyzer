@@ -1,5 +1,6 @@
-import { useState, useMemo } from 'react'
-import { SlidersHorizontal } from 'lucide-react'
+import { useState, useMemo, useEffect } from 'react'
+import { SlidersHorizontal, HelpCircle } from 'lucide-react'
+import { startTour, TOUR_KEY } from '@/lib/tour'
 
 import { useFundData } from '@/hooks/useFundData'
 import { LoadingPage } from '@/components/LoadingPage'
@@ -103,6 +104,13 @@ export default function App() {
     if (v.length === 0) setDomicileMode('include')
   }
 
+  useEffect(() => {
+    if (!localStorage.getItem(TOUR_KEY)) {
+      const t = setTimeout(startTour, 800)
+      return () => clearTimeout(t)
+    }
+  }, [])
+
   const isStreaming = state.status === 'streaming'
   const streamLoaded = isStreaming ? state.loaded : null
   const streamTotal = isStreaming ? state.total : null
@@ -183,6 +191,16 @@ export default function App() {
               {activeFilterCount}
             </span>
           )}
+        </button>
+
+        {/* 功能导览 */}
+        <button
+          onClick={startTour}
+          className="shrink-0 text-gray-400 hover:text-gray-700 transition-colors"
+          aria-label="功能导览"
+          title="功能导览"
+        >
+          <HelpCircle size={18} />
         </button>
 
         {/* GitHub */}

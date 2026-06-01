@@ -28,3 +28,15 @@ body {
     transform: translateX(300%);
   }
 }
+
+.hsbc-tour-popover .driver-popover-title {
+  color: #dc2626;
+}
+.hsbc-tour-popover .driver-popover-next-btn {
+  background-color: #dc2626;
+  border-color: #dc2626;
+}
+.hsbc-tour-popover .driver-popover-next-btn:hover {
+  background-color: #b91c1c;
+  border-color: #b91c1c;
+}
