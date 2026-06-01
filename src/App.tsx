@@ -6,7 +6,7 @@ import { LoadingPage } from '@/components/LoadingPage'
 import { FundTable } from '@/components/FundTable'
 import { FilterBar, countActiveFilters } from '@/components/FilterBar'
 import { DEFAULT_VISIBLE_COLUMNS, ALL_COLUMNS, TOGGLEABLE_COLUMN_IDS } from '@/lib/columns'
-import type { SortingState, ColumnFiltersState, VisibilityState } from '@tanstack/react-table'
+import type { SortingState, ColumnFiltersState, VisibilityState, ColumnSizingState } from '@tanstack/react-table'
 
 const STORAGE_KEY = 'hsbc_fund_column_prefs'
 
@@ -18,7 +18,7 @@ function buildInitialVisibility(): VisibilityState {
   )
 }
 
-function loadPrefs(): { visibility?: VisibilityState; order?: string[] } {
+function loadPrefs(): { visibility?: VisibilityState; order?: string[]; sizing?: ColumnSizingState } {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
     return raw ? JSON.parse(raw) : {}
@@ -27,12 +27,10 @@ function loadPrefs(): { visibility?: VisibilityState; order?: string[] } {
   }
 }
 
-function savePrefs(visibility: VisibilityState, order: string[]) {
+function savePrefs(visibility: VisibilityState, order: string[], sizing: ColumnSizingState) {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ visibility, order }))
-  } catch {
-    // ignore write errors (e.g. private browsing quota)
-  }
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ visibility, order, sizing }))
+  } catch {}
 }
 
 function mergeOrder(saved: string[], current: string[]): string[] {
@@ -65,16 +63,26 @@ export default function App() {
     return prefs.order ? mergeOrder(prefs.order, TOGGLEABLE_COLUMN_IDS) : TOGGLEABLE_COLUMN_IDS
   })
 
+  const [columnSizing, setColumnSizing] = useState<ColumnSizingState>(() => {
+    const prefs = loadPrefs()
+    return prefs.sizing ?? {}
+  })
+
   const columnOrder = ['fund_code', 'fund_name_clean', ...toggleableColOrder]
 
   function handleVisibilityChange(v: VisibilityState) {
     setColumnVisibility(v)
-    savePrefs(v, toggleableColOrder)
+    savePrefs(v, toggleableColOrder, columnSizing)
   }
 
   function handleOrderChange(ids: string[]) {
     setToggleableColOrder(ids)
-    savePrefs(columnVisibility, ids)
+    savePrefs(columnVisibility, ids, columnSizing)
+  }
+
+  function handleSizingChange(s: ColumnSizingState) {
+    setColumnSizing(s)
+    savePrefs(columnVisibility, toggleableColOrder, s)
   }
 
   const isStreaming = state.status === 'streaming'
@@ -195,6 +203,8 @@ export default function App() {
           onColumnVisibilityChange={handleVisibilityChange}
           sorting={sorting}
           onSortingChange={setSorting}
+          columnSizing={columnSizing}
+          onColumnSizingChange={handleSizingChange}
         />
       </main>
     </div>

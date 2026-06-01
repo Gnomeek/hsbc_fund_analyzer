@@ -9,6 +9,7 @@ import {
   type SortingState,
   type ColumnFiltersState,
   type VisibilityState,
+  type ColumnSizingState,
 } from '@tanstack/react-table'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import type { FundRow } from '@/lib/types'
@@ -45,6 +46,8 @@ type Props = {
   sorting: SortingState
   onSortingChange: (s: SortingState) => void
   columnOrder: string[]
+  columnSizing: ColumnSizingState
+  onColumnSizingChange: (s: ColumnSizingState) => void
 }
 
 export function FundTable({
@@ -56,18 +59,22 @@ export function FundTable({
   sorting,
   onSortingChange,
   columnOrder,
+  columnSizing,
+  onColumnSizingChange,
 }: Props) {
   const tableContainerRef = useRef<HTMLDivElement>(null)
 
   const table = useReactTable({
     data,
     columns: ALL_COLUMNS,
+    columnResizeMode: 'onChange',
     state: {
       globalFilter,
       columnFilters,
       columnVisibility,
       sorting,
       columnOrder,
+      columnSizing,
     },
     onColumnVisibilityChange: (updater) => {
       const next = typeof updater === 'function' ? updater(columnVisibility) : updater
@@ -76,6 +83,10 @@ export function FundTable({
     onSortingChange: (updater) => {
       const next = typeof updater === 'function' ? updater(sorting) : updater
       onSortingChange(next)
+    },
+    onColumnSizingChange: (updater) => {
+      const next = typeof updater === 'function' ? updater(columnSizing) : updater
+      onColumnSizingChange(next)
     },
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -128,7 +139,7 @@ export function FundTable({
 
   return (
     <div className="flex flex-col h-full">
-      <div className="text-sm text-gray-500 px-4 py-2">
+      <div data-tour="result-count" className="text-sm text-gray-500 px-4 py-2">
         共 {rows.length} / {data.length} 只基金
       </div>
       <div
@@ -147,15 +158,17 @@ export function FundTable({
           <thead className="sticky top-0 bg-white z-10 shadow-sm">
             {table.getHeaderGroups().map((hg) => (
               <tr key={hg.id}>
-                {hg.headers.map((header) => {
+                {hg.headers.map((header, idx) => {
                   const canSort = header.column.getCanSort()
                   const sorted = header.column.getIsSorted()
                   return (
                     <th
                       key={header.id}
+                      data-tour={idx === 0 ? 'table-header' : undefined}
                       style={{
                         width: header.getSize(),
-                        minWidth: header.getSize(),
+                        minWidth: header.column.columnDef.minSize,
+                        position: 'relative',
                       }}
                       className="text-left px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide border-b border-gray-200 select-none overflow-hidden whitespace-nowrap"
                     >
@@ -182,6 +195,17 @@ export function FundTable({
                           {flexRender(header.column.columnDef.header, header.getContext())}
                         </span>
                       )}
+                      {/* 列宽拖拽 handle */}
+                      <div
+                        onMouseDown={header.getResizeHandler()}
+                        onTouchStart={header.getResizeHandler()}
+                        onClick={(e) => e.stopPropagation()}
+                        className={`absolute right-0 top-0 h-full w-1 cursor-col-resize select-none transition-colors ${
+                          header.column.getIsResizing()
+                            ? 'bg-blue-500'
+                            : 'bg-transparent hover:bg-blue-300'
+                        }`}
+                      />
                     </th>
                   )
                 })}
