@@ -104,12 +104,15 @@ export default function App() {
     if (v.length === 0) setDomicileMode('include')
   }
 
+  const isReady = state.status === 'ok' ||
+    (state.status === 'streaming' && state.data.length > 0)
+
   useEffect(() => {
-    if (!localStorage.getItem(TOUR_KEY)) {
-      const t = setTimeout(startTour, 800)
-      return () => clearTimeout(t)
-    }
-  }, [])
+    if (!isReady) return
+    if (localStorage.getItem(TOUR_KEY)) return
+    const t = setTimeout(startTour, 300)
+    return () => clearTimeout(t)
+  }, [isReady])
 
   const isStreaming = state.status === 'streaming'
   const streamLoaded = isStreaming ? state.loaded : null

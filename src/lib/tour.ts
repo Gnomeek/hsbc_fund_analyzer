@@ -3,6 +3,7 @@ import { driver } from 'driver.js'
 export const TOUR_KEY = 'hsbc_fund_tour_done'
 
 export function startTour() {
+  if (document.body.classList.contains('driver-active')) return
   const driverObj = driver({
     showProgress: true,
     animate: true,
